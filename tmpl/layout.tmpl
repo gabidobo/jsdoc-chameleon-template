@@ -1,6 +1,7 @@
 <?js
 var template = env.conf.template;
 var usesSearch = Boolean(template.search);
+var showHeader = Boolean(template.header || true);
 var styleSwitcher = Boolean(env.conf.styleSwitcher);
 var icons = {
     github: 'fab fa-github-alt',
@@ -84,6 +85,11 @@ var codeFonts = env.conf.fonts.code.split('|').map(function(font) {
     nav ul a:hover, nav ul a:active {
         color: <?js= colors.text.contrast ?>;
     }
+    <?js if (showHeader) { ?>
+    .header-fixed { display: none }
+    nav { top: 0 }
+    #main { top: 0 }
+    <?js } ?>
   </style>
 </head>
 

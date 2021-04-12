@@ -40,6 +40,29 @@ function hashToLink(doclet, hash) {
   return '<a href="' + url + '">' + hash + '</a>';
 }
 
+function slugify(str) {
+  str = str.replace(/^\s+|\s+$/g, '');
+
+  // Make the string lowercase
+  str = str.toLowerCase();
+
+  // Remove accents, swap ñ for n, etc
+  var from = "ÁÄÂÀÃÅČÇĆĎÉĚËÈÊẼĔȆÍÌÎÏŇÑÓÖÒÔÕØŘŔŠŤÚŮÜÙÛÝŸŽáäâàãåčçćďéěëèêẽĕȇíìîïňñóöòôõøðřŕšťúůüùûýÿžþÞĐđßÆa·/_,:;";
+  var to   = "AAAAAACCCDEEEEEEEEIIIINNOOOOOORRSTUUUUUYYZaaaaaacccdeeeeeeeeiiiinnooooooorrstuuuuuyyzbBDdBAa------";
+  for (var i=0, l=from.length ; i<l ; i++) {
+      str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
+  }
+
+  // Remove invalid chars
+  str = str.replace(/[^a-z0-9 -]/g, '') 
+    // Collapse whitespace and replace by -
+    .replace(/\s+/g, '-') 
+    // Collapse dashes
+    .replace(/-+/g, '-'); 
+
+  return str;
+}
+
 function needsSignature(doclet) {
   let i, l, needsSig = false;
 
@@ -347,6 +370,19 @@ function buildNav(members) {
   var seen = {};
   // var seenTutorials = {};
 
+  if (members.readme) {
+    nav += `<h3 id="home-nav">Guides</h3><ul><li>
+      <a href="/">Introduction</a>
+      <ul class="methods">
+        ${members.readme.reduce((agg, heading) => agg + `
+        <li data-type="method" id="home-${heading.link}-nav">
+          <a href="/#${heading.link}">${heading.name}</a>
+        </li>
+        `, '')}
+      </ul>
+    </li></ul>`;
+  }
+
   nav += buildMemberNav(members.classes, 'Classes', seen, linkto);
   nav += buildMemberNav(members.modules, 'Modules', {}, linkto);
   // TODO: as needed, comment back in later
@@ -390,6 +426,7 @@ exports.publish = function (taffyData, opts, tutorials) {
   conf.default = conf.default || {};
 
   templatePath = path.normalize(opts.template);
+  templateConf = env.conf.template || {};
 
   view = new template.Template(path.join(templatePath, 'tmpl'));
 
@@ -566,6 +603,23 @@ exports.publish = function (taffyData, opts, tutorials) {
   view.tutoriallink = tutoriallink;
   view.htmlsafe = htmlsafe;
   view.outputSourceFiles = outputSourceFiles;
+
+  if (Boolean(templateConf.readmeMenu) && opts.readme) {
+    const headings = opts.readme.match(/<h2>(.*)<\/h2>/ig);
+
+    members.readme = [];
+  
+    headings.forEach(heading => {
+      const name = heading.replace(/<.?h2>/ig, '');
+      const link = slugify(name);
+
+      members.readme.push({ name, link });
+      opts.readme = opts.readme.replace(
+        heading,
+        `<a id="${link}">${heading}</a>`
+      );
+    });
+  }
 
     // once for all
   view.nav = buildNav(members);

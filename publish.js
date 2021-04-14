@@ -396,7 +396,7 @@ function buildNav(members) {
   if (members.globals.length) {
     members.globals.forEach(function (g) {
       if (g.kind !== 'typedef' && !hasOwnProp.call(seen, g.longname)) {
-        globalNav += '<li>' + linkto(g.longname, g.name) + '</li>';
+        globalNav += '<li class="global-entity">' + linkto(g.longname, g.name) + '</li>';
       }
       seen[g.longname] = true;
     });

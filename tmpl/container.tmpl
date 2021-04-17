@@ -15,6 +15,11 @@
 <section id="section-container">
   <article>
     <div class="container-overview">
+      <?js if (doc.augments && doc.augments.length) { ?>
+        <h3 class="subsection-title">Extends</h3>
+        <?js= self.partial('augments.tmpl', doc) ?>
+      <?js } ?>
+
       <?js if (doc.kind === 'module' && doc.modules) { ?>
         <?js if (doc.description) { ?>
           <div class="module-description description">
@@ -48,11 +53,6 @@
         <?js } ?>
       <?js } ?>
     </div>
-
-    <?js if (doc.augments && doc.augments.length) { ?>
-      <h3 class="subsection-title">Extends</h3>
-      <?js= self.partial('augments.tmpl', doc) ?>
-    <?js } ?>
 
     <?js if (doc.requires && doc.requires.length) { ?>
       <h3 class="subsection-title">Requires</h3>

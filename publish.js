@@ -372,11 +372,11 @@ function buildNav(members) {
 
   if (members.readme) {
     nav += `<h3 id="home-nav">Guides</h3><ul><li>
-      <a href="/">Introduction</a>
+      <a href=".">Introduction</a>
       <ul class="methods">
         ${members.readme.reduce((agg, heading) => agg + `
         <li data-type="method" id="home-${heading.link}-nav">
-          <a href="/#${heading.link}">${heading.name}</a>
+          <a href="./#${heading.link}">${heading.name}</a>
         </li>
         `, '')}
       </ul>
